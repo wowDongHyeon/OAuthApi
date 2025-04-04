@@ -103,5 +103,18 @@ public String generateToken(String clientId) {
     return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 }
 ```
+Https 설정 
+
+1. 인증서 src/resouce 폴더 밑에 넣기
+2. application.xml 수정하기
+
+인증서 명령어(powershell 실행)
+curl -k -X POST "https://localhost:8080/api/token?clientId=3a6a6822-fb3e-40f7-b080-d21124b99674&clientSecret=6bf0b5b8-1c33-4ef7-95f3-a371e8466cf0"
+keytool -genkeypair -alias my-local-ssl -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -storepass 123456 -keypass 123456 -validity 3650 -dname "CN=localhost, OU=dev, O=mycompany, L=seoul, ST=seoul, C=KR"
+
+curl 테스트 
+
+
+
 
 이 설정을 통해 토큰의 유효 기간을 조정할 수 있습니다. 
