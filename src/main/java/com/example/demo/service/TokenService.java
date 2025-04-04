@@ -122,4 +122,17 @@ public class TokenService {
         }
         return null;
     }
+
+    public boolean isValidToken(String token) {
+        try {
+            var jwt = decoder.decode(token);
+            Instant expiration = jwt.getExpiresAt();
+            if (expiration == null) {
+                return false;
+            }
+            return !expiration.isBefore(Instant.now());
+        } catch (Exception e) {
+            return false;
+        }
+    }
 } 
