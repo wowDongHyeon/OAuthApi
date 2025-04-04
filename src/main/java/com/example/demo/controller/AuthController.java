@@ -33,8 +33,9 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity<?> getToken(@RequestParam String clientId, 
-                                    @RequestParam String clientSecret) {
+    public ResponseEntity<?> getToken(
+                @RequestParam(name = "clientId") String clientId, 
+                @RequestParam(name = "clientSecret") String clientSecret) {
         Client client = clientService.validateClient(clientId);
         
         if (!client.getClientSecret().equals(clientSecret)) {
@@ -53,5 +54,24 @@ public class AuthController {
     @GetMapping("/test")
     public ResponseEntity<?> testEndpoint() {
         return ResponseEntity.ok("Access granted!");
+    }
+    
+    @GetMapping("/token/remaining-time")
+    public ResponseEntity<?> getTokenRemainingTime(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Invalid authorization header");
+        }
+        
+        String token = authHeader.substring(7); // "Bearer " 제거
+        long remainingSeconds = tokenService.getRemainingTime(token);
+        
+        Map<String, Object> response = new HashMap<>();
+        if (remainingSeconds < 0) {
+            response.put("error", "Invalid or expired token");
+            return ResponseEntity.badRequest().body(response);
+        }
+        
+        response.put("remaining_seconds", remainingSeconds);
+        return ResponseEntity.ok(response);
     }
 } 
